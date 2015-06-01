@@ -6,6 +6,12 @@
             <li>{{ i }}</li>
         {% endfor %}
     </ul>
-    <h2>
+    <h2>Run MODX snippet</h2>
+    Result:<br>
+    {{runSnippet ('Wayfinder',{startId:0})}}
+    <br>Or:<br>
+    {{runSnippet ('Wayfinder',{startId:0})|raw}}
+    <h2>Get MODX chunk</h2>
+    {{modx.getChunk('mm_rules')}}
 </body>
 </html>
