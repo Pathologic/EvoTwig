@@ -1,10 +1,11 @@
+<?
 /**
  * @props &debug=Debug;list;true,false;true &modxcache=MODX cache;list;true,false;false &conditional=Conditional;list;true,false;true
  */
 $debug = (isset($debug) && $debug == 'true') ? true : false;
 $modxcache = (isset($modxcache) && $modxcache == 'true') ? true : false;
 $conditional = (isset($conditional) && $conditional == 'true') ? true : false;
-$cachePath = 'assets/cache/template/';
+$cachePath = MODX_BASE_PATH . 'assets/cache/template/';
 
 switch($modx->event->name){
     case 'OnWebPageInit':
@@ -55,7 +56,7 @@ switch($modx->event->name){
                     $modx->minParserPasses = 2;
                     $modx->maxParserPasses = 10;
 
-                    $out = $modx->tpl->parseDocumentSource($content, $modx);
+                    $out = $modx->parseDocumentSource($content, $modx);
 
                     $modx->minParserPasses = -1;
                     $modx->maxParserPasses = -1;
