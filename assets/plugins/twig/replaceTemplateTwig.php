@@ -11,6 +11,7 @@ switch($modx->event->name){
     case 'OnWebPageInit':
     case 'OnManagerPageInit':
     case 'OnPageNotFound':{
+        include_once(MODX_MANAGER_PATH."composer/vendor/autoload.php");
         if(class_exists('Twig_Autoloader')){
             Twig_Autoloader::register();
             $loader = new Twig_Loader_Filesystem(MODX_BASE_PATH.'/assets/element/template/');
