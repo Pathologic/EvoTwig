@@ -16,7 +16,7 @@ switch($modx->event->name){
             Twig_Autoloader::register();
             $loader = new Twig_Loader_Filesystem(MODX_BASE_PATH.'/assets/element/template/');
             $modx->twig = new Twig_Environment($loader, array(
-                'cache' => MODX_BASE_PATH.$cachePath,
+                'cache' => $cachePath,
                 'debug' => $debug
             ));
             $modx->twig->addExtension(new Twig_Extension_Debug());
