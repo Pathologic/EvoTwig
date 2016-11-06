@@ -8,8 +8,6 @@
         }
     ],
     "require": {
-        "agelxnash/functions" : "dev-master",
-        "andre_487/php_rutils": "1.1.1",
         "twig/twig": "1.*@dev",
         "asm89/twig-cache-extension": "~0.1",
         "doctrine/cache": "1.5.*@dev",
