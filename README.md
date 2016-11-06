@@ -7,9 +7,9 @@ composer install
 ```
 
 Plugin searches for templates in the next order:
-tpl-3_doc-5.tpl - use this if resource id=5 and resource template=3;
-doc-5.tpl - use this if resource id=5;
-tpl-3.tpl - use this if resource template=3.
+* tpl-3_doc-5.tpl - use this if resource id=5 and resource template=3;
+* doc-5.tpl - use this if resource id=5;
+* tpl-3.tpl - use this if resource template=3.
 
 It's also possible to specify file name in template content:
 ```
@@ -18,12 +18,12 @@ It's also possible to specify file name in template content:
 If there's no main.tpl in templates folder, template will be set to blank.
 
 ##Variables to use in templates
-_GET, _POST, _SESSION, _COOKIE;
-modx - DocumentParser object;
-documentObject - $modx->documentObject;
-config - $modx->config;
-resource - document fields and tvs;
-plh - $modx->placeholders.
+* _GET, _POST, _SESSION, _COOKIE;
+* modx - DocumentParser object;
+* documentObject - $modx->documentObject;
+* config - $modx->config;
+* resource - document fields and tvs;
+* plh - $modx->placeholders.
 
 ##Caching
 Temporary cache:
