@@ -17,7 +17,8 @@
         "classmap":[
             "../../assets/lib/",
             "../../assets/snippets/DocLister/lib/",
-            "../includes/log.class.inc.php"
-    ]
+            "../includes/log.class.inc.php",
+			"../media/browser/mcpuk"
+		]
     }
 }
