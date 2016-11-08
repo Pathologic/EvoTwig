@@ -8,6 +8,40 @@ switch($modx->event->name){
 	case 'OnWebPageInit':
 	case 'OnManagerPageInit':
 	case 'OnPageNotFound':{
+		switch(true){
+			case $cacher == 'APC' && function_exists('apc_cache_info'):{
+				$modx->cache = new \Doctrine\Common\Cache\ApcCache();
+				break;
+			}
+			case $cacher == 'Memcache' && class_exists('Memcache'):{
+				$modx->cache = new \Doctrine\Common\Cache\MemcacheCache();
+
+				$memcache = new Memcache();
+				$memcache->connect('localhost', 11211);
+				$modx->cache->setMemcache($memcache);
+				break;
+			}
+			case $cacher == 'Memcached' && class_exists('Memcached'):{
+				$modx->cache = new \Doctrine\Common\Cache\MemcachedCache();
+
+				$memcached = new Memcached();
+				$memcached->connect('localhost', 11211);
+				$modx->cache->setMemcache($memcached);
+				break;
+			}
+			case $cacher == 'SQLite3' && class_exists('SQLite3'):{
+				$modx->cache = new \Doctrine\Common\Cache\SQLite3Cache(
+					new SQLite3(MODX_BASE_PATH.'assets/cache/sqlite.db'), 'cache'
+				);
+				break;
+			}
+			default:{
+				$modx->cache = new Doctrine\Common\Cache\FilesystemCache(
+					MODX_BASE_PATH.'assets/cache/template/'
+				);
+			}
+		}
+		$modx->cache->setNamespace($modx->getConfig('site_name'));
 		if(class_exists('Twig_Autoloader')){
 			Twig_Autoloader::register();
 			$loader = new Twig_Loader_Filesystem(MODX_BASE_PATH.$tplFolder);
@@ -138,7 +172,7 @@ switch($modx->event->name){
 		break;
 	}
 	case 'OnCacheUpdate':{
-		$modx->cache->deleteAll();
+		$modx->cache->flushAll();
 		break;
 	}
 	case 'OnWebPagePrerender':{
