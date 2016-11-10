@@ -61,7 +61,7 @@ switch($modx->event->name){
 			));
 
 			if (isset($allowedFunctions)) {
-				$allowedFunctions = array_map('trim',explode(','));
+				$allowedFunctions = array_map('trim',explode(',',$allowFunctions));
 				$PhpFunctionExtension = new Umpirsky\Twig\Extension\PhpFunctionExtension();
 				$PhpFunctionExtension->allowFunctions($allowedFunctions);
 				$modx->twig->addExtension($PhpFunctionExtension);
@@ -103,7 +103,7 @@ switch($modx->event->name){
  			* {{ count }} стат{{ ['ья','ьи','ей']|plural(count) }}
 			*/
 			$modx->twig->addFilter(new Twig_SimpleFilter('plural',
-				function plural($endings, $number)
+				function ($endings, $number)
 				{
   					$cases = [2, 0, 1, 1, 1, 2];
   					$n = $number;
