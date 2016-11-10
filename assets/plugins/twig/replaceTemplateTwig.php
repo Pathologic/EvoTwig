@@ -97,7 +97,19 @@ switch($modx->event->name){
 			$modx->twig->addFunction(new Twig_SimpleFunction('runSnippet', array($modx, 'runSnippet')));
 			$modx->twig->addFunction(new Twig_SimpleFunction('getChunk', array($modx->tpl, 'getChunk')));
 			$modx->twig->addFunction(new Twig_SimpleFunction('parseChunk', array($modx->tpl, 'parseChunk')));
-
+			
+			/**
+			* {{ ['Остался %d час', 'Осталось %d часа', 'Осталось %d часов']|plural(11) }}
+ 			* {{ count }} стат{{ ['ья','ьи','ей']|plural(count) }}
+			*/
+			$modx->twig->addFilter(new Twig_SimpleFilter('plural',
+				function plural($endings, $number)
+				{
+  					$cases = [2, 0, 1, 1, 1, 2];
+  					$n = $number;
+  					return sprintf($endings[ ($n%100>4 && $n%100<20) ? 2 : $cases[min($n%10, 5)] ], $n);
+				}
+			));
 			$modx->twig->getExtension('core')->setNumberFormat(0, ",", " ");
 		}else{
 			include_once(MODX_BASE_PATH."assets/snippets/DocLister/lib/xnop.class.php");
