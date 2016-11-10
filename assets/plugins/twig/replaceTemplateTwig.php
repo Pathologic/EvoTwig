@@ -60,18 +60,12 @@ switch($modx->event->name){
 				))
 			));
 
-			$PhpFunctionExtension = new Umpirsky\Twig\Extension\PhpFunctionExtension();
-			$PhpFunctionExtension->allowFunctions(array(
-				'count',
-				'get_included_files',
-				'filesize',
-				'get_key',
-				'intval',
-				'plural',
-				'rand'
-			));
-
-			$modx->twig->addExtension($PhpFunctionExtension);
+			if (isset($allowedFunctions)) {
+				$allowedFunctions = array_map('trim',explode(','));
+				$PhpFunctionExtension = new Umpirsky\Twig\Extension\PhpFunctionExtension();
+				$PhpFunctionExtension->allowFunctions($allowedFunctions);
+				$modx->twig->addExtension($PhpFunctionExtension);
+			}
 			/**
 			* {{ runSnippet('example') | modxParser }}
 			* {{ '[*id*]' | modxParser }}
