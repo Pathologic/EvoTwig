@@ -5,7 +5,7 @@ The advantages are:
 * fast and powerful template engine, say goodbye to quad brackets;
 * ability to use symfony cachers in snippets and plugins;
 * no need to sanitize MODX tags in user input;
-* storing templates in files;
+* storing templates in files - use your favourite editor and GIT;
 * redesigning of the whole site becomes very simple;
 
 ##Installation
@@ -51,6 +51,8 @@ If there's no main.tpl in templates folder, template will be set to blank.
 {{ parseChunk('chunkName', {'foo':'bar','bar':'baz'}) }}
 
 {{ parseChunk('@_CODE:[+foo+] is bar, [+bar+] is baz', {'foo':'bar','bar':'baz'}) }}
+
+{{ '[*pagetitle*] [(site_name)] [!snippet!] {{chunk}}' | modxParser }}
 ```
 
 ###Using Twig in output chunks
@@ -63,7 +65,7 @@ When EvoTwig is installed, DocLister (and components that use DLTemplate class f
 ]]
 ```
 
-In this example, DocLister uses file assets/templates/tpl/chunks/news.tpl as output chunk (available variables are data, modx, DocLister:
+In this example, DocLister uses file assets/templates/tpl/chunks/news.tpl as output chunk (available variables are data, modx, DocLister):
 ```
 <div class="col-sm-6">
     <a class="mainlink" href="{{ data['url'] }}">
