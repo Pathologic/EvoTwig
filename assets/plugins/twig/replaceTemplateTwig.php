@@ -168,6 +168,7 @@ switch($modx->event->name){
 					'config' => $modx->config,
 					'plh' => $modx->placeholders,
 					'debug' => $debug,
+					'ajax' => isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest',
 					'_GET' => $_GET,
 					'_POST' => $_POST,
 					'_COOKIE' => $_COOKIE,

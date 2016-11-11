@@ -36,7 +36,9 @@ If there's no main.tpl in templates folder, template will be set to blank.
 * documentObject - $modx->documentObject;
 * config - $modx->config;
 * resource - document fields and tvs;
-* plh - $modx->placeholders.
+* plh - $modx->placeholders;
+* debug - true if debug mode is enabled in plugin settings;
+* ajax - true if page is requested with ajax.
 
 ###Evo Addons
 ```
