@@ -61,7 +61,7 @@ switch($modx->event->name){
 			));
 
 			if (isset($allowedFunctions)) {
-				$allowedFunctions = array_map('trim',explode(',',$allowFunctions));
+				$allowedFunctions = array_map('trim',explode(',',$allowedFunctions));
 				$PhpFunctionExtension = new Umpirsky\Twig\Extension\PhpFunctionExtension();
 				$PhpFunctionExtension->allowFunctions($allowedFunctions);
 				$modx->twig->addExtension($PhpFunctionExtension);
