@@ -44,7 +44,9 @@ switch($modx->event->name){
 		$modx->cache->setNamespace($modx->getConfig('site_name'));
 		if(class_exists('Twig_Autoloader')){
 			Twig_Autoloader::register();
-			$loader = new Twig_Loader_Filesystem(MODX_BASE_PATH.$tplFolder);
+			$_loader = new Twig_Loader_Filesystem(MODX_BASE_PATH.$tplFolder);
+            $loader = new Twig_Loader_Chain(array($_loader));
+
 			$modx->twig = new Twig_Environment($loader, array(
 				'cache' => MODX_BASE_PATH.$cachePath,
 				'debug' => $debug
@@ -137,11 +139,12 @@ switch($modx->event->name){
 			}
 			default:{
 				$content = $documentObject['template'] ? $modx->documentContent : $documentObject['content'];
+                if (!$content) $content = $documentObject['content'];
 				if (substr($content,0,6) == '@FILE:') {
 					$template = str_replace('@FILE:','',trim($content));
 					if (!file_exists($dir.$template)) {
 						$template = '';
-						$modx->documentObject['template'] = 0;
+						$modx->documentObject['template'] = $documentObject['template'] ? ;
 						$modx->documentContent = $documentObject['content'];
 					}
 				};
@@ -161,12 +164,13 @@ switch($modx->event->name){
 				foreach ($documentObject as $key => $value) {
 					$resource[$key] = is_array($value) ? $value[1] : $value;
 				}
+
 				$modx->documentContent = $tpl->render(array(
-					'modx' => $modx,
-					'documentObject' => $documentObject,
+					'modx' => &$modx,
+					'documentObject' => &$documentObject,
 					'resource' => $resource,
 					'config' => $modx->config,
-					'plh' => $modx->placeholders,
+					'plh' => &$modx->placeholders,
 					'debug' => $debug,
 					'ajax' => isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest',
 					'_GET' => $_GET,
