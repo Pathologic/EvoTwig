@@ -143,8 +143,7 @@ switch($modx->event->name){
 				if (substr($content,0,6) == '@FILE:') {
 					$template = str_replace('@FILE:','',trim($content));
 					if (!file_exists($dir.$template)) {
-						$template = '';
-						$modx->documentObject['template'] = $documentObject['template'] ? ;
+						$modx->documentObject['template'] = 0;
 						$modx->documentContent = $documentObject['content'];
 					}
 				};
