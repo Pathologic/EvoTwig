@@ -8,7 +8,7 @@ The advantages are:
 * storing templates in files - use your favourite editor and GIT;
 * redesigning of the whole site becomes very simple;
 
-##Installation
+## Installation
 Create composer.json at site root:
 ```
 {
@@ -44,7 +44,7 @@ The order of plugins is important: replaceTemplateTwig must be the first.
 
 After installing libraries with composer, create a folder for templates, then enable replaceTwigTemplate plugin.
 
-##Twig usage
+## Twig usage
 Plugin searches for templates in such order:
 * tpl-3_doc-5.tpl - use this if resource id=5 and resource template=3;
 * doc-5.tpl - use this if resource id=5;
@@ -56,7 +56,7 @@ It's also possible to specify file name in template content or in content field 
 ```
 If there's no main.tpl in templates folder, template will be set to blank.
 
-###Variables to use in page templates
+### Variables to use in page templates
 * _GET, _POST, _SESSION, _COOKIE;
 * modx - DocumentParser object;
 * documentObject - $modx->documentObject;
@@ -66,7 +66,7 @@ If there's no main.tpl in templates folder, template will be set to blank.
 * debug - true if debug mode is enabled in plugin settings;
 * ajax - true if page is requested with ajax.
 
-###Evo Addons
+### Evo Addons
 ```
 {{ runSnippet('SnippetName',{
     'param1':'value',
@@ -83,7 +83,7 @@ If there's no main.tpl in templates folder, template will be set to blank.
 {{ '[*pagetitle*] [(site_name)] [!snippet!] {{chunk}}' | modxParser }}
 ```
 
-###Using Twig in output chunks
+### Using Twig in output chunks
 When EvoTwig is installed, DocLister (and components that use DLTemplate class for templating) allows to use Twig in output chunks since 2.3.0 by adding 'T_' to chunk name prefix:
 ```
 [[DocLister?
@@ -110,7 +110,7 @@ In this example, DocLister uses file assets/templates/tpl/chunks/news.tpl as out
 </div>
 ```
 
-##Caching
+## Caching
 
 Temporary cache:
 ```
