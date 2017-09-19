@@ -113,7 +113,6 @@ switch($modx->event->name){
 				}
 			));
 			$modx->twig->getExtension('Twig_Extension_Core')->setNumberFormat(0, ",", " ");
-            $modx->twig->addGlobal('lang', isset($_SESSION['evoBabel_curLang']) ? $_SESSION['evoBabel_curLang'] : 'ru');
 		}else{
 			include_once(MODX_BASE_PATH."assets/snippets/DocLister/lib/xnop.class.php");
 			$modx->twig = new xNop;
@@ -169,7 +168,7 @@ switch($modx->event->name){
 					'documentObject' => &$documentObject,
 					'resource' => $resource,
 					'debug' => $debug,
-                    'config' => $modx->config,
+                    'config' => &$modx->config,
                     'plh' => &$modx->placeholders,
                     'debug' => $debug,
                     'ajax' => isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest',
