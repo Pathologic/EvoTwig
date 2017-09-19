@@ -9,14 +9,40 @@ The advantages are:
 * redesigning of the whole site becomes very simple;
 
 ##Installation
-Install plugin, then go to /manager/composer/ and run:
+Create composer.json at site root:
+```
+{
+  "name": "agelxnash/modx",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "agel_nash",
+      "email": "modx@agel-nash.ru"
+    }
+  ],
+  "require": {
+    "twig/twig": "~2.4",
+    "asm89/twig-cache-extension": "~1.3",
+    "doctrine/cache": "~1.7",
+    "umpirsky/twig-php-function": "~0.2"
+  },
+  "autoload":{
+    "classmap":[
+      "assets/lib/",
+      "assets/snippets/DocLister/lib/",
+      "assets/snippets/FormLister/"
+    ]
+  }
+}
+```
+Install plugin, then go to site root and run:
 ```
 composer install
 ```
 
-The order of plugins is important: __autoload must be the first, and replaceTemplateTwig must be the second.
+The order of plugins is important: replaceTemplateTwig must be the first.
 
-After installing libraries with composer, enable __autoload plugin, then replaceTwigTemplate.
+After installing libraries with composer, create a folder for templates, then enable replaceTwigTemplate plugin.
 
 ##Twig usage
 Plugin searches for templates in such order:

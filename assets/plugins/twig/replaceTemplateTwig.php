@@ -8,6 +8,7 @@ switch($modx->event->name){
 	case 'OnWebPageInit':
 	case 'OnManagerPageInit':
 	case 'OnPageNotFound':{
+	    $modx->tpl = \DLTemplate::getInstance($modx);
 		switch(true){
 			case $cacher == 'APC' && function_exists('apc_cache_info'):{
 				$modx->cache = new \Doctrine\Common\Cache\ApcCache();
@@ -42,8 +43,7 @@ switch($modx->event->name){
 			}
 		}
 		$modx->cache->setNamespace($modx->getConfig('site_name'));
-		if(class_exists('Twig_Autoloader')){
-			Twig_Autoloader::register();
+		if(class_exists('Twig_Environment')){
 			$_loader = new Twig_Loader_Filesystem(MODX_BASE_PATH.$tplFolder);
             $loader = new Twig_Loader_Chain(array($_loader));
 
@@ -72,7 +72,7 @@ switch($modx->event->name){
 			* {{ runSnippet('example') | modxParser }}
 			* {{ '[*id*]' | modxParser }}
 			*/
-			$modx->twig->addFilter('modxParser', new Twig_SimpleFilter('modxParser', function($content) use($modx){
+			$modx->twig->addFilter(new Twig_Filter('modxParser', function($content) use($modx){
 					$modx->minParserPasses = 2;
 					$modx->maxParserPasses = 10;
 
@@ -81,8 +81,8 @@ switch($modx->event->name){
 					$modx->minParserPasses = -1;
 					$modx->maxParserPasses = -1;
 					return $out;
-				})
-			);
+				}
+			));
 
 			/**
 			* {{ makeUrl(20) }}
@@ -91,20 +91,20 @@ switch($modx->event->name){
 			* {{ makeUrl(20, {page: 2}, false) }}
 			*/
 			$modx->twig->addFunction(
-				new Twig_SimpleFunction('makeUrl', function($id, array $args = array(), $absolute = true) use($modx){
+				new Twig_Function('makeUrl', function($id, array $args = array(), $absolute = true) use($modx){
 					return $modx->makeUrl($id, '', http_build_query($args), $absolute ? 'full' : '');
 				})
 			);
 
-			$modx->twig->addFunction(new Twig_SimpleFunction('runSnippet', array($modx, 'runSnippet')));
-			$modx->twig->addFunction(new Twig_SimpleFunction('getChunk', array($modx->tpl, 'getChunk')));
-			$modx->twig->addFunction(new Twig_SimpleFunction('parseChunk', array($modx->tpl, 'parseChunk')));
+			$modx->twig->addFunction(new Twig_Function('runSnippet', array($modx, 'runSnippet')));
+			$modx->twig->addFunction(new Twig_Function('getChunk', array($modx->tpl, 'getChunk')));
+			$modx->twig->addFunction(new Twig_Function('parseChunk', array($modx->tpl, 'parseChunk')));
 			
 			/**
 			* {{ ['Остался %d час', 'Осталось %d часа', 'Осталось %d часов']|plural(11) }}
  			* {{ count }} стат{{ ['ья','ьи','ей']|plural(count) }}
 			*/
-			$modx->twig->addFilter(new Twig_SimpleFilter('plural',
+			$modx->twig->addFilter(new Twig_Filter('plural',
 				function ($endings, $number)
 				{
   					$cases = [2, 0, 1, 1, 1, 2];
@@ -112,7 +112,8 @@ switch($modx->event->name){
   					return sprintf($endings[ ($n%100>4 && $n%100<20) ? 2 : $cases[min($n%10, 5)] ], $n);
 				}
 			));
-			$modx->twig->getExtension('core')->setNumberFormat(0, ",", " ");
+			$modx->twig->getExtension('Twig_Extension_Core')->setNumberFormat(0, ",", " ");
+            $modx->twig->addGlobal('lang', isset($_SESSION['evoBabel_curLang']) ? $_SESSION['evoBabel_curLang'] : 'ru');
 		}else{
 			include_once(MODX_BASE_PATH."assets/snippets/DocLister/lib/xnop.class.php");
 			$modx->twig = new xNop;
@@ -163,19 +164,19 @@ switch($modx->event->name){
 				foreach ($documentObject as $key => $value) {
 					$resource[$key] = is_array($value) ? $value[1] : $value;
 				}
-
+                //$tpl->addGlobal('lang',isset($_SESSION['evoBabel_curLang']) ? $_SESSION['evoBabel_curLang'] : 'ru');
 				$modx->documentContent = $tpl->render(array(
-					'modx' => &$modx,
 					'documentObject' => &$documentObject,
 					'resource' => $resource,
-					'config' => $modx->config,
-					'plh' => &$modx->placeholders,
 					'debug' => $debug,
-					'ajax' => isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest',
-					'_GET' => $_GET,
-					'_POST' => $_POST,
-					'_COOKIE' => $_COOKIE,
-					'_SESSION' => $_SESSION
+                    'config' => $modx->config,
+                    'plh' => &$modx->placeholders,
+                    'debug' => $debug,
+                    'ajax' => isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest',
+                    '_GET' => $_GET,
+                    '_POST' => $_POST,
+                    '_COOKIE' => $_COOKIE,
+                    '_SESSION' => $_SESSION
 				));
 			}
 		}
