@@ -44,6 +44,7 @@ switch($modx->event->name){
 		}
 		$modx->cache->setNamespace($modx->getConfig('site_name'));
 		if(class_exists('Twig_Environment')){
+			if (!is_readable(MODX_BASE_PATH.$tplFolder)) mkdir(MODX_BASE_PATH.$tplFolder);
 			$_loader = new Twig_Loader_Filesystem(MODX_BASE_PATH.$tplFolder);
             $loader = new Twig_Loader_Chain(array($_loader));
 
