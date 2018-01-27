@@ -3,46 +3,19 @@ Set of plugins to replace Evo parser with Twig.
 
 The advantages are:
 * fast and powerful template engine, say goodbye to quad brackets;
-* ability to use symfony cachers in snippets and plugins;
+* ability to cache data by key or temporary in snippets and plugins;
 * no need to sanitize MODX tags in user input;
-* storing templates in files - use your favourite editor and GIT;
+* storing templates in files - use your favourite editor with syntax hightlight and GIT;
 * redesigning of the whole site becomes very simple;
 
 ## Installation
-Create composer.json at site root:
+Go to site root and run command:
 ```
-{
-  "name": "agelxnash/modx",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "agel_nash",
-      "email": "modx@agel-nash.ru"
-    }
-  ],
-  "require": {
-    "twig/twig": "~2.4",
-    "asm89/twig-cache-extension": "~1.3",
-    "doctrine/cache": "~1.7",
-    "umpirsky/twig-php-function": "~0.2"
-  },
-  "autoload":{
-    "classmap":[
-      "assets/lib/",
-      "assets/snippets/DocLister/lib/",
-      "assets/snippets/FormLister/"
-    ]
-  }
-}
-```
-Install plugin, then go to site root and run:
-```
-composer install
+composer require pathologic/evo-twig
 ```
 
+If everything is finished successfully, then install plugin.
 The order of plugins is important: replaceTemplateTwig must be the first.
-
-After installing libraries with composer, create a folder for templates, then enable replaceTwigTemplate plugin.
 
 ## Twig usage
 Plugin searches for templates in such order:
@@ -84,7 +57,7 @@ If there's no main.tpl in templates folder, template will be set to blank.
 ```
 
 ### Using Twig in output chunks
-When EvoTwig is installed, DocLister (and components that use DLTemplate class for templating) allows to use Twig in output chunks since 2.3.0 by adding 'T_' to chunk name prefix:
+When EvoTwig is installed, DocLister (and components that use DLTemplate class for templating) allows to use Twig in output chunks since version of 2.3.0 by adding 'T_' to chunk name prefix:
 ```
 [[DocLister?
 &templatePath=`assets/templates/tpl`
