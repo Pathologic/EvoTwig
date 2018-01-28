@@ -14,9 +14,12 @@ switch($modx->event->name){
 				$modx->cache = new \Doctrine\Common\Cache\ApcCache();
 				break;
 			}
+			case $cacher == 'APCu' && function_exists('apcu_cache_info'):{
+				$modx->cache = new \Doctrine\Common\Cache\ApcuCache();
+				break;
+			}
 			case $cacher == 'Memcache' && class_exists('Memcache'):{
 				$modx->cache = new \Doctrine\Common\Cache\MemcacheCache();
-
 				$memcache = new Memcache();
 				$memcache->connect('localhost', 11211);
 				$modx->cache->setMemcache($memcache);
@@ -24,10 +27,9 @@ switch($modx->event->name){
 			}
 			case $cacher == 'Memcached' && class_exists('Memcached'):{
 				$modx->cache = new \Doctrine\Common\Cache\MemcachedCache();
-
 				$memcached = new Memcached();
-				$memcached->connect('localhost', 11211);
-				$modx->cache->setMemcache($memcached);
+				$memcached->addServer('memcache_host', 11211);
+				$modx->cache->setMemcached($memcached);
 				break;
 			}
 			case $cacher == 'SQLite3' && class_exists('SQLite3'):{
@@ -45,7 +47,13 @@ switch($modx->event->name){
 		$modx->cache->setNamespace($modx->getConfig('site_name'));
 		if(class_exists('Twig_Environment')){
 			if (!is_readable(MODX_BASE_PATH.$tplFolder)) mkdir(MODX_BASE_PATH.$tplFolder);
-			$_loader = new Twig_Loader_Filesystem(MODX_BASE_PATH.$tplFolder);
+			if (isset($tplDevFolder) && !is_readable(MODX_BASE_PATH.$tplDevFolder)) mkdir(MODX_BASE_PATH.$tplDevFolder);
+			if (isset($tplDevFolder) && $modx->getLoginUserID('mgr')) {
+				$_loader = new Twig_Loader_Filesystem(MODX_BASE_PATH.$tplDevFolder);	
+			} else {
+				$_loader = new Twig_Loader_Filesystem(MODX_BASE_PATH.$tplFolder);	
+			}
+			
             $loader = new Twig_Loader_Chain(array($_loader));
 
 			$modx->twig = new Twig_Environment($loader, array(
@@ -156,7 +164,7 @@ switch($modx->event->name){
 				include($dir.$template);
 				$modx->documentContent = ob_get_contents();
 				ob_end_clean();
-			}else{
+			}elseif ($disableTwig == false){
 				$modx->minParserPasses = -1;
 				$modx->maxParserPasses = -1;
 				$tpl = $modx->twig->loadTemplate($template);
@@ -164,7 +172,6 @@ switch($modx->event->name){
 				foreach ($documentObject as $key => $value) {
 					$resource[$key] = is_array($value) ? $value[1] : $value;
 				}
-                //$tpl->addGlobal('lang',isset($_SESSION['evoBabel_curLang']) ? $_SESSION['evoBabel_curLang'] : 'ru');
 				$modx->documentContent = $tpl->render(array(
 					'documentObject' => &$documentObject,
 					'resource' => $resource,
