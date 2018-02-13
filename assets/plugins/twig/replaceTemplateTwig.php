@@ -164,7 +164,7 @@ switch($modx->event->name){
 				include($dir.$template);
 				$modx->documentContent = ob_get_contents();
 				ob_end_clean();
-			}elseif ($disableTwig == false){
+			}elseif ($disableTwig == 'false'){
 				$modx->minParserPasses = -1;
 				$modx->maxParserPasses = -1;
 				$tpl = $modx->twig->loadTemplate($template);
