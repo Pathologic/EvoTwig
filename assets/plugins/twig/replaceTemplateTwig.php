@@ -3,12 +3,14 @@ $debug = (isset($debug) && $debug == 'true') ? true : false;
 $modxcache = (isset($modxcache) && $modxcache == 'true') ? true : false;
 $conditional = (isset($conditional) && $conditional == 'true') ? true : false;
 $cachePath = 'assets/cache/template/';
+$tplExt = isset($tplExt) ? $tplExt : 'tpl';
 
 switch($modx->event->name){
 	case 'OnWebPageInit':
 	case 'OnManagerPageInit':
 	case 'OnPageNotFound':{
 	    $modx->tpl = \DLTemplate::getInstance($modx);
+	    $modx->tpl->setTemplateExtension($tplExt);
 		switch(true){
 			case $cacher == 'APC' && function_exists('apc_cache_info'):{
 				$modx->cache = new \Doctrine\Common\Cache\ApcCache();
@@ -49,10 +51,10 @@ switch($modx->event->name){
 			if (!is_readable(MODX_BASE_PATH.$tplFolder)) mkdir(MODX_BASE_PATH.$tplFolder);
 			if (isset($tplDevFolder) && !is_readable(MODX_BASE_PATH.$tplDevFolder)) mkdir(MODX_BASE_PATH.$tplDevFolder);
 			if (isset($tplDevFolder) && $modx->getLoginUserID('mgr')) {
-				$_loader = new Twig_Loader_Filesystem(MODX_BASE_PATH.$tplDevFolder);	
-			} else {
-				$_loader = new Twig_Loader_Filesystem(MODX_BASE_PATH.$tplFolder);	
+				$tplFolder = $tplDevFolder;	
 			}
+			$_loader = new Twig_Loader_Filesystem(MODX_BASE_PATH.$tplFolder);	
+			$modx->setTemplatePath($tplFolder);
 			
             $loader = new Twig_Loader_Chain(array($_loader));
 
@@ -196,7 +198,6 @@ switch($modx->event->name){
 	}
 	case 'OnSiteRefresh':{
 		\Helpers\FS::getInstance()->rmDir($cachePath);
-		break;
 	}
 	case 'OnWebPagePrerender':{
 		if($debug || !$modxcache){
