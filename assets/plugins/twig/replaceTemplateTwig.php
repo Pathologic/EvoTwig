@@ -173,6 +173,7 @@ switch($modx->event->name){
 					$resource[$key] = is_array($value) ? $value[1] : $value;
 				}
 				$modx->documentContent = $tpl->render(array(
+					'modx' => $modx,
 					'documentObject' => &$documentObject,
 					'resource' => $resource,
 					'debug' => $debug,
