@@ -1,6 +1,4 @@
 <?php
-if (!isset($modx->cache)) return;
-
 $lifetime = isset($lifetime) ? $lifetime : null;
 $out = '';
 if (!empty($key) && isset($snippetName)) {

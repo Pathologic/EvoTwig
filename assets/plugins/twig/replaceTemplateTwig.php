@@ -40,7 +40,7 @@ switch($modx->event->name){
 			}
 			default:{
 				$modx->cache = new Doctrine\Common\Cache\FilesystemCache(
-					MODX_BASE_PATH.'assets/cache/template/'
+					MODX_BASE_PATH.'assets/cache/data/'
 				);
 			}
 		}
@@ -192,6 +192,9 @@ switch($modx->event->name){
 	case 'OnCacheUpdate':{
 		$modx->cache->flushAll();
 		break;
+	}
+	case 'OnSiteRefresh':{
+		\Helpers\FS::getInstance()->rmDir($cachePath);
 	}
 	case 'OnWebPagePrerender':{
 		if($debug || !$modxcache){
