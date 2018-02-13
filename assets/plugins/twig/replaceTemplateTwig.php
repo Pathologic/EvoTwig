@@ -195,6 +195,7 @@ switch($modx->event->name){
 	}
 	case 'OnSiteRefresh':{
 		\Helpers\FS::getInstance()->rmDir($cachePath);
+		break;
 	}
 	case 'OnWebPagePrerender':{
 		if($debug || !$modxcache){
