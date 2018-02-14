@@ -54,7 +54,7 @@ switch($modx->event->name){
 				$tplFolder = $tplDevFolder;	
 			}
 			$_loader = new Twig_Loader_Filesystem(MODX_BASE_PATH.$tplFolder);	
-			$modx->setTemplatePath($tplFolder);
+			$modx->tpl->setTemplatePath($tplFolder);
 			
             $loader = new Twig_Loader_Chain(array($_loader));
 
