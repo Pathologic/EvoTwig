@@ -12,4 +12,4 @@
  * @internal    @installset base
  */
 
-require MODX_BASE_PATH.'assets/snippets/getcache/snippet.getCache.php';
+return require MODX_BASE_PATH.'assets/snippets/getcache/snippet.getCache.php';
