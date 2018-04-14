@@ -51,7 +51,7 @@ If there's no main.tpl in templates folder, template will be set to blank.
 
 {{ parseChunk('chunkName', {'foo':'bar','bar':'baz'}) }}
 
-{{ parseChunk('@_CODE:[+foo+] is bar, [+bar+] is baz', {'foo':'bar','bar':'baz'}) }}
+{{ parseChunk('@CODE:[+foo+] is bar, [+bar+] is baz', {'foo':'bar','bar':'baz'}) }}
 
 {{ '[*pagetitle*] [(site_name)] [!snippet!] {{chunk}}' | modxParser }}
 ```
