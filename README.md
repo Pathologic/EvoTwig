@@ -44,4 +44,7 @@ If there's no main.blade.php in templates folder, template will be set to blank.
 {{ $modx->getChunk('chunkName')}}
 
 @modxParser('[*pagetitle*] [(site_name)] [!snippet!] {{chunk}}')
+
+<?php $chunk = 'test {{ $modx->getConfig("site_name") }} {{ $param1 }} {!! $param1 !!}'; ?>
+{{ $modx->tpl->parseChunk('@B_CODE:'.$chunk, ['param1' => 'value with "quote"']) }}
 ```

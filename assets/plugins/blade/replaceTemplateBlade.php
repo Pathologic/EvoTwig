@@ -35,13 +35,19 @@ switch ($modx->event->name) {
             if (isset($tplDevFolder) && $modx->getLoginUserID('mgr')) {
                 $tplFolder = $tplDevFolder;
             }
+
+            if (! is_readable(MODX_BASE_PATH . $tplFolder . '/~cache/')) {
+                mkdir(MODX_BASE_PATH . $tplFolder . '/~cache/');
+            }
             $modx->blade = new Jenssegers\Blade\Blade(
-                MODX_BASE_PATH . $tplFolder,
-                MODX_BASE_PATH . $cachePath
+                realpath(MODX_BASE_PATH . $tplFolder),
+                realpath(MODX_BASE_PATH . $cachePath)
             );
             $modx->blade->compiler()->directive('modxParser', function ($content) {
                 return '<?php echo modxParser(' . $content . ');?>';
             });
+            $modx->tpl->setTemplateExtension('.blade.php');
+            $modx->tpl->setTemplatePath($tplFolder, true);
         } else {
             include_once MODX_BASE_PATH . 'assets/snippets/DocLister/lib/xnop.class.php';
             $modx->blade = new xNop;
@@ -86,8 +92,7 @@ switch ($modx->event->name) {
                 $modx->minParserPasses = -1;
                 $modx->maxParserPasses = -1;
                 $tpl = $modx->blade->make($template, [
-                    'modx'  => $modx,
-                    'debug' => $debug,
+                    'modx'  => $modx
                 ]);
                 $modx->documentContent = $tpl->render();
             }
@@ -98,6 +103,9 @@ switch ($modx->event->name) {
         if (class_exists(Illuminate\Filesystem\Filesystem::class)) {
             $file = new Illuminate\Filesystem\Filesystem;
             $file->cleanDirectory(MODX_BASE_PATH . $cachePath);
+            if(isset($tplFolder)) {
+                $file->cleanDirectory(MODX_BASE_PATH . $tplFolder . '/~cache/');
+            }
         } else {
             \Helpers\FS::getInstance()->rmDir($cachePath);
         }
