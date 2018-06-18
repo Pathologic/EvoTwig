@@ -4,11 +4,27 @@ $modxcache = (isset($modxcache) && $modxcache == 'true') ? true : false;
 $conditional = (isset($conditional) && $conditional == 'true') ? true : false;
 $cachePath = 'assets/cache/blade/';
 
+$modx->tpl = \DLTemplate::getInstance($modx);
+if (! function_exists('modxParser')) {
+    function modxParser($content)
+    {
+        $modx = evolutionCMS();
+        $modx->minParserPasses = 2;
+        $modx->maxParserPasses = 10;
+
+        $out = $modx->tpl->parseDocumentSource($content, $modx);
+
+        $modx->minParserPasses = -1;
+        $modx->maxParserPasses = -1;
+
+        return $out;
+    }
+}
+
 switch ($modx->event->name) {
     case 'OnWebPageInit':
     case 'OnManagerPageInit':
     case 'OnPageNotFound':
-        $modx->tpl = \DLTemplate::getInstance($modx);
         if (class_exists(Jenssegers\Blade\Blade::class)) {
             if (! is_readable(MODX_BASE_PATH . $tplFolder)) {
                 mkdir(MODX_BASE_PATH . $tplFolder);
@@ -23,8 +39,11 @@ switch ($modx->event->name) {
                 MODX_BASE_PATH . $tplFolder,
                 MODX_BASE_PATH . $cachePath
             );
+            $modx->blade->compiler()->directive('modxParser', function ($content) {
+                return '<?php echo modxParser(' . $content . ');?>';
+            });
         } else {
-            include_once MODX_BASE_PATH . "assets/snippets/DocLister/lib/xnop.class.php";
+            include_once MODX_BASE_PATH . 'assets/snippets/DocLister/lib/xnop.class.php';
             $modx->blade = new xNop;
         }
         $modx->useConditional = $conditional && !$debug;
