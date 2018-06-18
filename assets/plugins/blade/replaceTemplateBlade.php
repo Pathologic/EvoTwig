@@ -92,7 +92,8 @@ switch ($modx->event->name) {
                 $modx->minParserPasses = -1;
                 $modx->maxParserPasses = -1;
                 $tpl = $modx->blade->make($template, [
-                    'modx'  => $modx
+                    'modx'  => $modx,
+                    'document' => $modx->documentObject
                 ]);
                 $modx->documentContent = $tpl->render();
             }
