@@ -3,6 +3,7 @@ $debug = (isset($debug) && $debug == 'true') ? true : false;
 $modxcache = (isset($modxcache) && $modxcache == 'true') ? true : false;
 $conditional = (isset($conditional) && $conditional == 'true') ? true : false;
 $cachePath = 'assets/cache/blade/';
+if (!isset($tplFolder)) $tplFolder = 'assets/templates/';
 
 $modx->tpl = \DLTemplate::getInstance($modx);
 if (!function_exists('modxParser')) {
@@ -20,37 +21,65 @@ if (!function_exists('modxParser')) {
         return $out;
     }
 }
+if (!function_exists('evoCoreLang')) {
+    function evoCoreLang($key)
+    {
+        global $_lang;
+
+        return get_by_key($_lang, $key, $key);
+    }
+}
 
 switch ($modx->event->name) {
     case 'OnWebPageInit':
     case 'OnManagerPageInit':
     case 'OnPageNotFound':
         if (class_exists(Jenssegers\Blade\Blade::class)) {
-            if (!is_readable(MODX_BASE_PATH . $tplFolder)) {
-                mkdir(MODX_BASE_PATH . $tplFolder);
-            }
-            if (isset($tplDevFolder) && !is_readable(MODX_BASE_PATH . $tplDevFolder)) {
-                mkdir(MODX_BASE_PATH . $tplDevFolder);
-            }
-            if (isset($tplDevFolder) && $modx->getLoginUserID('mgr')) {
-                $tplFolder = $tplDevFolder;
-            }
+            try {
+                if (!is_readable(MODX_BASE_PATH . $tplFolder)) {
+                    mkdir(MODX_BASE_PATH . $tplFolder);
+                }
+                if (isset($tplDevFolder) && !is_readable(MODX_BASE_PATH . $tplDevFolder)) {
+                    mkdir(MODX_BASE_PATH . $tplDevFolder);
+                }
+                if (isset($tplDevFolder) && $modx->getLoginUserID('mgr')) {
+                    $tplFolder = $tplDevFolder;
+                }
 
-            if (!is_readable(MODX_BASE_PATH . $tplFolder . '/~cache/')) {
-                mkdir(MODX_BASE_PATH . $tplFolder . '/~cache/');
+                if (!is_readable(MODX_BASE_PATH . $cachePath)) {
+                    mkdir(MODX_BASE_PATH . $cachePath);
+                }
+                if (! isset($modx->laravel)) {
+                    $modx->laravel = new Illuminate\Container\Container;
+                }
+                $blade = new Jenssegers\Blade\Blade(
+                    realpath(MODX_BASE_PATH . $tplFolder),
+                    realpath(MODX_BASE_PATH . $cachePath),
+                    $modx->laravel
+                );
+                /**
+                 * @var Illuminate\View\Compilers\BladeCompiler $compiler
+                 */
+                $compiler = $blade->compiler();
+                $compiler->directive('modxParser', function ($content) {
+                    return '<?php echo modxParser(' . $content . ');?>';
+                });
+                $blade->compiler()->directive('lang', function ($content) use ($modx) {
+                    return '<?php echo evoCoreLang(' . $content . ');?>';
+                });
+                /**
+                 * @var Illuminate\View\Factory $blade
+                 */
+                $blade->addNamespace('cache', $cachePath);
+                $paginatorTpl = MODX_BASE_PATH . rtrim($tplFolder, '/') . '/' . 'pagination';
+                if (is_readable($paginatorTpl) && is_dir($paginatorTpl)) {
+                    $blade->addNamespace('pagination', $paginatorTpl);
+                }
+                $modx->tpl->setTemplateExtension('.blade.php');
+                $modx->tpl->setTemplatePath($tplFolder, true);
+            } catch (Exception $exception) {
+                $modx->messageQuit($exception->getMessage());
             }
-            $modx->blade = new Jenssegers\Blade\Blade(
-                realpath(MODX_BASE_PATH . $tplFolder),
-                realpath(MODX_BASE_PATH . $cachePath)
-            );
-            $modx->blade->compiler()->directive('modxParser', function ($content) {
-                return '<?php echo modxParser(' . $content . ');?>';
-            });
-            $modx->tpl->setTemplateExtension('.blade.php');
-            $modx->tpl->setTemplatePath($tplFolder, true);
-        } else {
-            include_once MODX_BASE_PATH . 'assets/snippets/DocLister/lib/xnop.class.php';
-            $modx->blade = new xNop;
         }
         $modx->useConditional = $conditional && !$debug;
         break;
@@ -83,21 +112,16 @@ switch ($modx->event->name) {
                 }
         }
         if (!empty($template)) {
-            if ($modx->blade instanceof xNop) {
-                ob_start();
-                include($dir . $template);
-                $modx->documentContent = ob_get_contents();
-                ob_end_clean();
-            } elseif (isset($disableBlade) && $disableBlade === 'false') {
+            if (!isset($disableBlade) || $disableBlade === 'false') {
                 $modx->minParserPasses = -1;
                 $modx->maxParserPasses = -1;
                 try {
-                    $tpl = $modx->blade->make($template, [
+                    $tpl = $modx->laravel->get('view')->make($template, [
                         'modx'     => $modx,
                         'document' => $modx->documentObject
                     ]);
                     $modx->documentContent = $tpl->render();
-                } catch(Exception $exception) {
+                } catch (Exception $exception) {
                     $modx->messageQuit($exception->getMessage());
                 }
             }
@@ -109,16 +133,10 @@ switch ($modx->event->name) {
             if (class_exists(Illuminate\Filesystem\Filesystem::class)) {
                 $file = new Illuminate\Filesystem\Filesystem;
                 $file->cleanDirectory(MODX_BASE_PATH . $cachePath);
-                if (isset($tplFolder)) {
-                    $file->cleanDirectory(MODX_BASE_PATH . $tplFolder . '/~cache/');
-                }
             } else {
                 \Helpers\FS::getInstance()->rmDir($cachePath);
-                if (isset($tplFolder)) {
-                    \Helpers\FS::getInstance()->rmDir($tplFolder . '/~cache/');
-                }
             }
-        } catch(Exception $exception) {
+        } catch (Exception $exception) {
             $modx->messageQuit($exception->getMessage());
         }
         break;
