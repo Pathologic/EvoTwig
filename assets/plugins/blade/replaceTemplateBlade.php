@@ -74,7 +74,7 @@ switch ($modx->event->name) {
                 if (!$content) {
                     $content = $documentObject['content'];
                 }
-                if (0 === substr($content, '@FILE:')) {
+                if (0 === strpos($content, '@FILE:')) {
                     $template = str_replace('@FILE:', '', trim($content));
                     if (!file_exists($dir . $template)) {
                         $modx->documentObject['template'] = 0;
