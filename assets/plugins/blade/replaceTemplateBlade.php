@@ -5,7 +5,7 @@ $conditional = (isset($conditional) && $conditional == 'true') ? true : false;
 $cachePath = 'assets/cache/blade/';
 
 $modx->tpl = \DLTemplate::getInstance($modx);
-if (! function_exists('modxParser')) {
+if (!function_exists('modxParser')) {
     function modxParser($content)
     {
         $modx = evolutionCMS();
@@ -26,17 +26,17 @@ switch ($modx->event->name) {
     case 'OnManagerPageInit':
     case 'OnPageNotFound':
         if (class_exists(Jenssegers\Blade\Blade::class)) {
-            if (! is_readable(MODX_BASE_PATH . $tplFolder)) {
+            if (!is_readable(MODX_BASE_PATH . $tplFolder)) {
                 mkdir(MODX_BASE_PATH . $tplFolder);
             }
-            if (isset($tplDevFolder) && ! is_readable(MODX_BASE_PATH . $tplDevFolder)) {
+            if (isset($tplDevFolder) && !is_readable(MODX_BASE_PATH . $tplDevFolder)) {
                 mkdir(MODX_BASE_PATH . $tplDevFolder);
             }
             if (isset($tplDevFolder) && $modx->getLoginUserID('mgr')) {
                 $tplFolder = $tplDevFolder;
             }
 
-            if (! is_readable(MODX_BASE_PATH . $tplFolder . '/~cache/')) {
+            if (!is_readable(MODX_BASE_PATH . $tplFolder . '/~cache/')) {
                 mkdir(MODX_BASE_PATH . $tplFolder . '/~cache/');
             }
             $modx->blade = new Jenssegers\Blade\Blade(
@@ -82,7 +82,7 @@ switch ($modx->event->name) {
                     }
                 }
         }
-        if (! empty($template)) {
+        if (!empty($template)) {
             if ($modx->blade instanceof xNop) {
                 ob_start();
                 include($dir . $template);
@@ -91,24 +91,35 @@ switch ($modx->event->name) {
             } elseif (isset($disableBlade) && $disableBlade === 'false') {
                 $modx->minParserPasses = -1;
                 $modx->maxParserPasses = -1;
-                $tpl = $modx->blade->make($template, [
-                    'modx'  => $modx,
-                    'document' => $modx->documentObject
-                ]);
-                $modx->documentContent = $tpl->render();
+                try {
+                    $tpl = $modx->blade->make($template, [
+                        'modx'     => $modx,
+                        'document' => $modx->documentObject
+                    ]);
+                    $modx->documentContent = $tpl->render();
+                } catch(Exception $exception) {
+                    $modx->messageQuit($exception->getMessage());
+                }
             }
         }
         break;
     case 'OnCacheUpdate':
     case 'OnSiteRefresh':
-        if (class_exists(Illuminate\Filesystem\Filesystem::class)) {
-            $file = new Illuminate\Filesystem\Filesystem;
-            $file->cleanDirectory(MODX_BASE_PATH . $cachePath);
-            if(isset($tplFolder)) {
-                $file->cleanDirectory(MODX_BASE_PATH . $tplFolder . '/~cache/');
+        try {
+            if (class_exists(Illuminate\Filesystem\Filesystem::class)) {
+                $file = new Illuminate\Filesystem\Filesystem;
+                $file->cleanDirectory(MODX_BASE_PATH . $cachePath);
+                if (isset($tplFolder)) {
+                    $file->cleanDirectory(MODX_BASE_PATH . $tplFolder . '/~cache/');
+                }
+            } else {
+                \Helpers\FS::getInstance()->rmDir($cachePath);
+                if (isset($tplFolder)) {
+                    \Helpers\FS::getInstance()->rmDir($tplFolder . '/~cache/');
+                }
             }
-        } else {
-            \Helpers\FS::getInstance()->rmDir($cachePath);
+        } catch(Exception $exception) {
+            $modx->messageQuit($exception->getMessage());
         }
         break;
     case 'OnWebPagePrerender':
