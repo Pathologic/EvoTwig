@@ -56,29 +56,10 @@ If there's no main.blade.php in templates folder, template will be set to blank.
 composer require illuminate/pagination
 ```
 
-#### Step 2 / Register paginator
-```php
-Illuminate\Pagination\Paginator::viewFactoryResolver(function () use($modx){
-    return $modx->laravel->get('view');
-});
-
-Illuminate\Pagination\Paginator::currentPathResolver(function () {
-    return rtrim(preg_replace('/\?.*/', '', $_SERVER['REQUEST_URI']), '/');
-});
-
-Illuminate\Pagination\Paginator::currentPageResolver(function ($pageName = 'page') {
-    $page = get_by_key($_GET, $pageName, 1, 'is_scalar');
-    if (filter_var($page, FILTER_VALIDATE_INT) !== false && (int) $page >= 1) {
-        return (int) $page;
-    }
-    return 1;
-});
-```
-
-#### Step 3 / Views
+#### Step 2 / Views
 Copy files from the [vendor/illuminate/pagination/resources/views](https://github.com/illuminate/pagination/tree/master/resources/views) to you templates folder and customization this is blade.
 
-#### Step 4 / Usage with array
+#### Step 3.1 / Usage with array
 ```php
 $items = array_map(function ($value) {
     return (object)[
@@ -98,7 +79,7 @@ $currentItems = array_slice($items, $perPage * ($currentPage - 1), $perPage);
 $paginator = new Illuminate\Pagination\Paginator($items, 10, $currentPage);
 ```
 
-### Step 4 / Usage with DBAPI
+### Step 3.2 / Usage with DBAPI
 ```php
 $query = "SELECT * FROM ". $modx->getDatabase()->getFullTableName('site_content') . " WHERE parent=0 ORDER BY pageitle";
 $query = $modx->getDatabase()->query($query);
@@ -110,7 +91,7 @@ $currentItems = array_slice($items, $perPage * ($currentPage - 1), $perPage);
 $paginator = new Illuminate\Pagination\Paginator($items, 10, $currentPage);
 ```
 
-### Step 4 / Usage with [agelxnash/modx-evo-database](https://github.com/AgelxNash/modx-evo-database)
+### Step 3.3 / Usage with [agelxnash/modx-evo-database](https://github.com/AgelxNash/modx-evo-database)
 ```php
 $paginator = $modx->getDatabase()->getDriver()->getCapsule()->table('site_content')
         ->where('parent', '=', 0)
@@ -125,7 +106,7 @@ $paginator = AgelxNash\Modx\Evo\Database\Models\SiteContent::where('parent', '='
         ->paginate(10);
 ```
 
-### Step 5 / Render
+### Step 4 / Render
 ```php
 foreach ($paginator->items() as $blogPost) {
    echo '<strong>' . $blogPost->id . '</strong> / ' . $blogPost->pagetitle . '<br />';
