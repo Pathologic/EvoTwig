@@ -110,7 +110,7 @@ $currentItems = array_slice($items, $perPage * ($currentPage - 1), $perPage);
 $paginator = new Illuminate\Pagination\Paginator($items, 10, $currentPage);
 ```
 
-### Step 4 / Usage with agelxnash/modx-evo-database
+### Step 4 / Usage with [agelxnash/modx-evo-database](https://github.com/AgelxNash/modx-evo-database)
 ```php
 $paginator = $modx->getDatabase()->getDriver()->getCapsule()->table('site_content')
         ->where('parent', '=', 0)
