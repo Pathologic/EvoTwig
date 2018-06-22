@@ -154,4 +154,8 @@ try {
 } catch (Exception $exception) {
     $modx->messageQuit($exception->getMessage());
 }
-### Create additional plugin
+```
+### Usage
+```php
+@evoBabel('Example text')
+```
