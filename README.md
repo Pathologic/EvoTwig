@@ -114,3 +114,44 @@ foreach ($paginator->items() as $blogPost) {
 echo $paginator->render();
 ```
 You can read more about pagination in the [documentation](https://laravel.com/docs/5.6/pagination).
+
+## Customization
+### Create additional plugin
+Support the [evoBabel](https://github.com/webber12/evobabel-0.2) directive
+```php
+/**
+ * evoBabelBlade 
+ *
+ * evoBabel - additional blade directive
+ *
+ * @category    plugin
+ * @version     1.0.0
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU Public License (GPL)
+ * @author      Agel_Nash
+ * @internal    @events OnWebPageInit,OnManagerPageInit,OnPageNotFound
+ * @internal    @installset base
+ * @internal    @disabled 1
+ */
+if (! defined('MODX_BASE_PATH')) {
+    die('What are you doing? Get out of here!');
+}
+try {
+	if(!function_exists('_evoBabel')) {
+		function _evoBabel($str, $useEmpty = true){
+			$out = evolutionCMS()->runSnippet('lang', array('a' => $str));
+			if(empty($out) && $useEmpty !== false) {
+				$out = $str;
+			}
+
+			return $out;
+		}
+	}
+
+	$compiller = $modx->laravel->get('view.engine.resolver')->resolve('blade')->getCompiler();
+	$compiller->directive('evoBabel', function ($content) use ($modx) {
+        return '<?php echo  _evoBabel(' . $content . ');?>';
+    });
+} catch (Exception $exception) {
+    $modx->messageQuit($exception->getMessage());
+}
+### Create additional plugin
