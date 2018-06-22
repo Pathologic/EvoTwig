@@ -36,7 +36,7 @@ if (!empty($template)) {
         $modx->maxParserPasses = -1;
         $tpl = $modx->laravel->get('view')->make($template, [
             'modx'     => $modx,
-            'document' => $modx->documentObject
+            'documentObject' => isset($modx->documentObject['id']) ? modxDocumentObject($modx->documentObject['id']) : []
         ]);
         $modx->documentContent = $tpl->render();
     }

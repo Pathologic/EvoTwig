@@ -3,7 +3,7 @@ if (! defined('MODX_BASE_PATH')) {
     die('What are you doing? Get out of here!');
 }
 try {
-    include_once 'functions.php';
+    include_once __DIR__ . '/functions.php';
 
     $debug = (isset($debug) && $debug === 'true');
     $modxcache = (isset($modxcache) && $modxcache === 'true');
