@@ -1,7 +1,7 @@
 <?php
 $e = $modx->event;
-$key = $method.'_'.$identifier;
 if ($e->name == 'OnBeforeLoadDocumentObject') {
+    $key = $method.'_'.$identifier;
     if ($modx->cache->contains($key)) {
         $documentObject = $modx->cache->fetch($key);
         $e->_output = $documentObject;
@@ -14,6 +14,7 @@ if ($e->name == 'OnLoadWebDocument') {
     }
 }
 if ($e->name == 'OnAfterLoadDocumentObject') {
+    $key = $method.'_'.$identifier;
     if (!$modx->cache->contains($key)) {
         if ($modx->documentObject['template']) {
             $modx->documentObject['_template'] = $modx->documentObject['template'];
