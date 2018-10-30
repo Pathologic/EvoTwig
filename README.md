@@ -12,7 +12,7 @@ The advantages are:
 ## Installation
 Go to site root and run command:
 ```
-composer require jenssegers/blade dev-master
+composer require illuminate/view
 ```
 
 If everything is finished successfully, then install plugin.

@@ -6,7 +6,7 @@ if (! function_exists('modxParser')) {
         $modx->minParserPasses = 2;
         $modx->maxParserPasses = 10;
 
-        $out = $modx->tpl->parseDocumentSource($content, $modx);
+        $out = DLTemplate::getInstance($modx)->parseDocumentSource($content, $modx);
 
         $modx->minParserPasses = -1;
         $modx->maxParserPasses = -1;
@@ -19,7 +19,7 @@ if (! function_exists('evoCoreLang')) {
     {
         global $_lang;
 
-        return get_by_key($_lang, $key, $key);
+        return isset($_lang[$key]) ? $_lang[$key] : $key;
     }
 }
 
@@ -53,7 +53,7 @@ if (! function_exists('modxDocumentObject')) {
         if ($values === true) {
             foreach ($documentObject as $key => $value) {
                 if (is_array($value)) {
-                    $documentObject[$key] = get_by_key($value, 1, '');
+                    $documentObject[$key] = isset($value[1]) ? $value[1] : '';
                 }
             }
         }

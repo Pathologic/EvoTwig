@@ -34,7 +34,7 @@ if (!empty($template)) {
     if (!isset($disableBlade) || $disableBlade === 'false') {
         $modx->minParserPasses = -1;
         $modx->maxParserPasses = -1;
-        $tpl = $modx->laravel->get('view')->make($template, [
+        $tpl = $modx->blade->make($template, [
             'modx'     => $modx,
             'documentObject' => isset($modx->documentObject['id']) ? modxDocumentObject($modx->documentObject['id']) : []
         ]);
