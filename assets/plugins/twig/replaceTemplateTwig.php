@@ -200,7 +200,11 @@ switch ($modx->event->name) {
                 '_COOKIE'        => $_COOKIE,
                 '_SESSION'       => $_SESSION
             );
-            $modx->tpl->setTwigTemplateVars($twigTemplateVars);
+            if (method_exists($modx->tpl, 'setTwigTemplateVars')) {
+                $modx->tpl->setTwigTemplateVars($twigTemplateVars);
+            } else {
+                $modx->tpl->setTemplateData($twigTemplateVars);
+            }
             if (!empty($template)) {
                 if ($disableTwig == 'true' || $modx->twig instanceof xNop) {
                     ob_start();
