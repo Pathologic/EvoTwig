@@ -46,6 +46,18 @@ switch ($modx->event->name) {
                         );
                         break;
                     }
+                case $cacher == 'Redis' && class_exists('Redis'):{
+                    $modx->cache = new \Doctrine\Common\Cache\RedisCache(
+                        new Redis()
+                    );
+                    break;
+                }
+                case $cacher == 'Predis' && class_exists('Predis\Client'):{
+                    $modx->cache = new \Doctrine\Common\Cache\PredisCache(
+                        new Predis\Client()
+                    );
+                    break;
+                }
                 default:
                     {
                         $modx->cache = new \Doctrine\Common\Cache\FilesystemCache(
@@ -76,16 +88,17 @@ switch ($modx->event->name) {
                     'debug' => $debug
                 ));
                 $modx->twig->addExtension(new Twig_Extension_Debug());
+                if (!empty($modx->cache)) {
+                    $cacheProvider = new Asm89\Twig\CacheExtension\CacheProvider\DoctrineCacheAdapter($modx->cache);
 
-                $cacheProvider = new Asm89\Twig\CacheExtension\CacheProvider\DoctrineCacheAdapter($modx->cache);
-
-                $modx->twig->addExtension(new Asm89\Twig\CacheExtension\Extension(
-                    new Asm89\Twig\CacheExtension\CacheStrategy\IndexedChainingCacheStrategy(array(
-                        'time' => new Asm89\Twig\CacheExtension\CacheStrategy\LifetimeCacheStrategy($cacheProvider),
-                        'key'  => new Asm89\Twig\CacheExtension\CacheStrategy\GenerationalCacheStrategy($cacheProvider,
-                            new \AN\Twig\KeyGenerator(), 0)
-                    ))
-                ));
+                    $modx->twig->addExtension(new Asm89\Twig\CacheExtension\Extension(
+                        new Asm89\Twig\CacheExtension\CacheStrategy\IndexedChainingCacheStrategy(array(
+                            'time' => new Asm89\Twig\CacheExtension\CacheStrategy\LifetimeCacheStrategy($cacheProvider),
+                            'key'  => new Asm89\Twig\CacheExtension\CacheStrategy\GenerationalCacheStrategy($cacheProvider,
+                                new \AN\Twig\KeyGenerator(), 0)
+                        ))
+                    ));
+                }
 
                 if (isset($allowedFunctions)) {
                     $allowedFunctions = array_map('trim', explode(',', $allowedFunctions));
@@ -219,13 +232,19 @@ switch ($modx->event->name) {
     case 'OnCacheUpdate':
         {
             if (!empty($modx->cache)) {
-                $modx->cache->flushAll();
+                $modx->cache->deleteAll();
             }
             break;
         }
     case 'OnSiteRefresh':
         {
-            \Helpers\FS::getInstance()->rmDir($cachePath);
+            if (!empty($modx->cache)) {
+                if ($cacher == 'Files') {
+                    \Helpers\FS::getInstance()->rmDir($cachePath);
+                } else {
+                    $modx->cache->flushAll();
+                }
+            }
         }
     case 'OnWebPagePrerender':
         {
