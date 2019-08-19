@@ -152,6 +152,9 @@ switch ($modx->event->name) {
                     }
                 ));
                 $modx->twig->getExtension('Twig_Extension_Core')->setNumberFormat(0, ",", " ");
+                if (method_exists($modx->tpl, 'loadTwig')) {
+                    $modx->tpl->loadTwig();
+                }
             } else {
                 include_once(MODX_BASE_PATH . "assets/snippets/DocLister/lib/xnop.class.php");
                 $modx->twig = new xNop;
