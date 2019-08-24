@@ -39,7 +39,7 @@ $viewResolver->register('php', function () {
 });
 $viewFinder = new Illuminate\View\FileViewFinder($filesystem, $pathsToTemplates);
 $viewFactory = new Illuminate\View\Factory($viewResolver, $viewFinder, $eventDispatcher);
-$viewFactory->addNamespace('cache', $cachePath);
+$viewFactory->addNamespace('cache', MODX_BASE_PATH . $cachePath);
 
 if (class_exists(Illuminate\Pagination\Paginator::class)) {
     Illuminate\Pagination\Paginator::viewFactoryResolver(function () use ($modx) {
