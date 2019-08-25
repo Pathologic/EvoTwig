@@ -63,3 +63,5 @@ if (class_exists(Illuminate\Pagination\Paginator::class)) {
     }
 }
 $modx->blade = $viewFactory;
+$modx->tpl = DLTemplate::getInstance($modx);
+$modx->tpl->loadBlade();
