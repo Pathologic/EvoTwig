@@ -35,7 +35,7 @@ switch ($modx->event->name) {
                     {
                         $modx->cache = new \Doctrine\Common\Cache\MemcachedCache();
                         $memcached = new Memcached();
-                        $memcached->addServer('memcache_host', 11211);
+                        $memcached->addServer('localhost', 11211);
                         $modx->cache->setMemcached($memcached);
                         break;
                     }
@@ -248,6 +248,7 @@ switch ($modx->event->name) {
             if (!empty($modx->cache)) {
                 if ($cacher == 'Files') {
                     \Helpers\FS::getInstance()->rmDir($cachePath);
+                    \Helpers\FS::getInstance()->rmDir('assets/cache/data/');
                 } else {
                     $modx->cache->flushAll();
                 }
