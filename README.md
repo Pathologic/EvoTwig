@@ -1,6 +1,8 @@
 # EvoTwig
 Set of plugins to replace Evo parser with Twig.
 
+**Not supported anymore. Use https://github.com/Pathologic/EvoTwig2**
+
 The advantages are:
 * fast and powerful template engine, say goodbye to quad brackets;
 * ability to cache data by key or temporary in snippets and plugins;
